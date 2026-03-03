@@ -32,15 +32,15 @@ Struktur direktori
 ##### ![Gambar 1](gambar9.png).
 
 Mendefinisikan route untuk aplikasi. seperti:
-\'''
-    $routes->get('/', 'Home::index');
-\'''
+```
+$routes->get('/', 'Home::index');
+```
 Membuat route baru di dalam Routes.php:
-\'''
-    $routes->get('/about', 'Page::about');
-    $routes->get('/contact', 'Page::contact');
-    $routes->get('/faqs', 'Page::faqs');
-\'''
+```
+$routes->get('/about', 'Page::about');
+$routes->get('/contact', 'Page::contact');
+$routes->get('/faqs', 'Page::faqs');
+```
 
 Kemudian mengecek route apakah sudah benar dengan menjalankan perintah "php spark routes".
 ##### ![Gambar 1](gambar10.png).
@@ -55,21 +55,21 @@ Setelah itu kembali ke halaman yang sudah diakses tadi. maka akan muncul hasil s
 ##### ![Gambar 1](gambar12.png).
 
 Mengubah status autoroute dapat mengubah nilai variabelnya. Untuk menonaktifkan ubah nilai true menjadi false.
-"$routes->setAutoRoute(true);" - "$routes->setAutoRoute(false);".
+```$routes->setAutoRoute(true);" - "$routes->setAutoRoute(false);```
 lalu tambahkan method baru pada Controller Page seperti berikut.
-\'''
-    public function tos()
-    {
-        echo "ini halaman Term of Services";
-    }
-\'''
+```
+public function tos()
+{
+    echo "ini halaman Term of Services";
+}
+```
 
 Kemudian akses halaman http://localhost/lab11_ci/ci4/tos.
 ##### ![Gambar 1](gambar13.png).
 
 Membuat View
 Membuat file baru dengan nama about.php pada direktori view. kemudian isi kode yang telah diberikan.
-\'''
+```
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -82,10 +82,10 @@ Membuat file baru dengan nama about.php pada direktori view. kemudian isi kode y
    <p><?= $content; ?></p>
 </body>
 </html>".
-\'''
+```
 
 lalu mengubah method about menjadi seperti berikut:
-\'''
+```
 public function about()
     {
         return view('about', [
@@ -93,7 +93,7 @@ public function about()
             'content' => 'Ini adalah halaman about yang menjelaskan tentang isi halaman ini.'
         ]);
     }
-\'''
+```
 
 kemudian refresh halaman yang tadi diakses.
 ##### ![Gambar 1](gambar14.png).
