@@ -32,11 +32,11 @@ Struktur direktori
 ##### ![Gambar 1](gambar9.png).
 
 Mendefinisikan route untuk aplikasi. seperti:
-```
+```python
 $routes->get('/', 'Home::index');
 ```
 Membuat route baru di dalam Routes.php:
-```
+```python
 $routes->get('/about', 'Page::about');
 $routes->get('/contact', 'Page::contact');
 $routes->get('/faqs', 'Page::faqs');
@@ -55,9 +55,9 @@ Setelah itu kembali ke halaman yang sudah diakses tadi. maka akan muncul hasil s
 ##### ![Gambar 1](gambar12.png).
 
 Mengubah status autoroute dapat mengubah nilai variabelnya. Untuk menonaktifkan ubah nilai true menjadi false.
-```$routes->setAutoRoute(true);" - "$routes->setAutoRoute(false);```
+```python$routes->setAutoRoute(true);" - "$routes->setAutoRoute(false);```
 lalu tambahkan method baru pada Controller Page seperti berikut.
-```
+```python
 public function tos()
 {
     echo "ini halaman Term of Services";
@@ -69,7 +69,7 @@ Kemudian akses halaman http://localhost/lab11_ci/ci4/tos.
 
 Membuat View
 Membuat file baru dengan nama about.php pada direktori view. kemudian isi kode yang telah diberikan.
-```
+```python
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -85,7 +85,7 @@ Membuat file baru dengan nama about.php pada direktori view. kemudian isi kode y
 ```
 
 lalu mengubah method about menjadi seperti berikut:
-```
+```python
 public function about()
     {
         return view('about', [
