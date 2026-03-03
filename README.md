@@ -115,3 +115,11 @@ lalu ubah file about dengan kode seperti berikut:
 
 lalu refresh kembali. maka hasil akan muncul seperti berikut.
 ##### ![Gambar 1](gambar18.png).
+
+## Pertanyaan dan Tugas
+Lengkapi kode program untuk menu lainnya yang ada pada Controller Page, sehingga semua
+link pada navigasi header dapat menampilkan tampilan dengan layout yang sama.
+##### ![Gambar 1](gambar25.png).
+##### ![Gambar 1](gambar22.png).
+##### ![Gambar 1](gambar23.png).
+##### ![Gambar 1](gambar24.png).
