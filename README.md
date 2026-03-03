@@ -13,7 +13,7 @@ Menghilangkan titik koma (;) pada ekstensi yang diaktifkan. lalu simpan kembali 
 Menginstall Codeigniter 4 dengan cara manual dan menggunakan Composer. setelah menginstall ubah ke extrak file zip Codeigniter ke direktori htdocs/lab11_ci. kemudian Ubah nama direktory framework-4.x.xx menjadi ci4. setelah langkah tadi dilakukan buka browser lalu ketik/salin http://localhost/lab11_ci/ci4/public/.
 ##### ![Gambar 1](gambar3.png).
 
-Menjalankan CLI untuk mempermudah proses development. Caranya membuka terminal command prompt. lalu lokasi direktori diarahkan sesuai dengan direktori project yang dibuat.
+Menjalankan CLI dengan memanggil php spark untuk mempermudah proses development. Caranya membuka terminal command prompt. lalu lokasi direktori diarahkan sesuai dengan direktori project yang dibuat.
 ##### ![Gambar 1](gambar4.png).
 
 Mengaktifkan mode debugging untuk memudahkan developer dalam mengetahui pesan error apabila terjadi kesalahan dalam kode program.
@@ -28,8 +28,11 @@ Lalu ubah nama file env menjadi .env.
 Mencoba error dengan mengubah kode pada file app/Controller/Home.php dan hilangkan titik koma pada akhir kode.
 ##### ![Gambar 1](gambar8.png).
 
-Struktur direktori
+Berikut adalah struktur direktorinya.
 ##### ![Gambar 1](gambar9.png).
+
+Router terletak pada file app/config/Routes.php.
+##### ![Gambar 1](gambar20.png).
 
 Mendefinisikan route untuk aplikasi. seperti:
 ```python
@@ -106,6 +109,9 @@ header.php:
 ##### ![Gambar 1](gambar16.png).
 footer.php
 ##### ![Gambar 1](gambar17.png).
+
+lalu ubah file about dengan kode seperti berikut:
+##### ![Gambar 1](gambar21.png).
 
 lalu refresh kembali. maka hasil akan muncul seperti berikut.
 ##### ![Gambar 1](gambar18.png).
