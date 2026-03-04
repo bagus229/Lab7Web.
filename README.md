@@ -35,11 +35,11 @@ Router terletak pada file app/config/Routes.php.
 ##### ![Gambar 1](gambar20.png).
 
 Mendefinisikan route untuk aplikasi. seperti:
-```python
+```php
 $routes->get('/', 'Home::index');
 ```
 Membuat route baru di dalam Routes.php:
-```python
+```php
 $routes->get('/about', 'Page::about');
 $routes->get('/contact', 'Page::contact');
 $routes->get('/faqs', 'Page::faqs');
@@ -58,9 +58,9 @@ Setelah itu kembali ke halaman yang sudah diakses tadi. maka akan muncul hasil s
 ##### ![Gambar 1](gambar12.png).
 
 Mengubah status autoroute dapat mengubah nilai variabelnya. Untuk menonaktifkan ubah nilai true menjadi false.
-```python$routes->setAutoRoute(true);" - "$routes->setAutoRoute(false);```
+```php$routes->setAutoRoute(true);" - "$routes->setAutoRoute(false);```
 lalu tambahkan method baru pada Controller Page seperti berikut.
-```python
+```php
 public function tos()
 {
     echo "ini halaman Term of Services";
@@ -72,7 +72,7 @@ Kemudian akses halaman http://localhost/lab11_ci/ci4/tos.
 
 Membuat View
 Membuat file baru dengan nama about.php pada direktori view. kemudian isi kode yang telah diberikan.
-```python
+```php
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,7 +88,7 @@ Membuat file baru dengan nama about.php pada direktori view. kemudian isi kode y
 ```
 
 lalu mengubah method about menjadi seperti berikut:
-```python
+```php
 public function about()
     {
         return view('about', [
@@ -119,7 +119,45 @@ lalu refresh kembali. maka hasil akan muncul seperti berikut.
 ## Pertanyaan dan Tugas
 Lengkapi kode program untuk menu lainnya yang ada pada Controller Page, sehingga semua
 link pada navigasi header dapat menampilkan tampilan dengan layout yang sama.
+## Jawab
+Membuat file artikel.php seperti yang ada pada navigasi di direktori views. lalu di isi dengan kode yang sama seperti di file about.php.
+```php
+<?= $this->include('template/header'); ?>
+
+<h1><?= $title; ?></h1>
+<hr>
+<p><?= $content; ?></p>
+
+<?= $this->include('template/footer');
+```
+Kemudian menambahkan kode seperti dibawah pada file page.php:
+```php
+public function artikel()
+    {
+        return view('artikel', [
+            'title'   => 'Halaman Artikel',
+            'content' => 'Ini halaman artikel.'
+        ]);
+    }
+```
+
+Kemudian tambahkan routes untuk artikel di dihalaman Routes.php.
+```php
+<?php
+
+use CodeIgniter\Router\RouteCollection;
+
+/**
+ * @var RouteCollection $routes
+ */
+$routes->get('/', 'Home::index');
+$routes->get('/artikel', 'Page::artikel');
+$routes->get('/about', 'Page::about');
+$routes->get('/contact', 'Page::contact');
+```
+Setelah menambahkan route untuk bagian artikel dan navigasi lainnya agar navigasinya ketika diklik akan terarah ke halaman artikel. maka jalankan perintah php spark serve di shell xampp.
 ##### ![Gambar 1](gambar25.png).
+Hasil akan muncul seperti gambar dibawah ini.
 ##### ![Gambar 1](gambar22.png).
 ##### ![Gambar 1](gambar23.png).
 ##### ![Gambar 1](gambar24.png).
