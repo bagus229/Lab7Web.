@@ -3,7 +3,7 @@
 # Kelas: I241C
 # Matkul: Pemrograman Web 2
 
-## Langkah-Langkah Praktikum
+## Langkah-Langkah Praktikum 1
 Mengaktifkan ekstensi yang diperlukan melalui XAMPP Control Panel. pilih bagian Apache lalu klik Config/PHP.ini.
 ##### ![Gambar 1](gambar1.png).
 
@@ -161,3 +161,202 @@ Hasil akan muncul seperti gambar dibawah ini.
 ##### ![Gambar 1](gambar22.png).
 ##### ![Gambar 1](gambar23.png).
 ##### ![Gambar 1](gambar24.png).
+
+## Langkah-Langkah Praktikum 2
+
+#### Membuat database: studi kasus data artikel.
+Membuat database dengan nama lab_ci4.
+```CREATE DATABASE lab_ci4;```
+
+Kemudian membuat tabel.
+```
+CREATE TABLE artikel (
+ id INT(11) auto_increment,
+ judul VARCHAR(200) NOT NULL,
+ isi TEXT,
+ gambar VARCHAR(200),
+ status TINYINT(1) DEFAULT 0,
+ slug VARCHAR(200),
+ PRIMARY KEY(id)
+);
+```
+#### Konfigurasi koneksi database
+Membuat konfigurasi untuk menghubungkan dengan database server dengan menggunakan file .env.
+##### ![Gambar 1](gambar26.png).
+
+#### Membuat model
+Membuat model proses data artikel. dengan membuat file pada direktori app/Models dengan nama ArtikelModel.php. lalu isi dengan kode seperti berikut:
+```php
+<?php
+
+namespace App\Models;
+
+use CodeIgniter\Model;
+
+Class ArtikelModel extends Model
+{
+    protected $table = 'artikel';
+    protected $primarykey = 'id';
+    protected $useAutoIncrement = true;
+    protected $allowedFields = ['judul','isi', 'status', 'slug', 
+'gambar'];
+
+}
+```
+
+#### Membuat controller
+Membuat Controller baru dengan nama Artikel.php pada direktori app/Controllers dan isi dengan kode seperti berikut:
+```php
+<?php
+
+namespace App\Controllers;
+
+use App\Models\ArtikelModel;
+
+class Artikel extends BaseController
+{
+    public function index()
+    {
+        $title = 'Daftar Artikel';
+        $model = new ArtikelModel();
+        $artikel = $model->findAll();
+        return view('artikel/index', compact('artikel', 'title'));
+    }
+```
+
+#### Membuat view
+Membuat view dengan file baru dengan nama index.php. isi dengan kode sebagai berikut:
+```php
+<?= $this->include('template/header'); ?>
+
+<?php if($artikel): foreach($artikel as $row): ?>
+<article class="entry">
+    <h2><a href="<?= base_url('/artikel/' . $row['slug']);?>"><?=
+$row['judul']; ?></a>
+</h2>
+    <img src="<?= base_url('/gambar/' . $row['gambar']);?>" alt="<?=
+$row['judul']; ?>">
+    <p><?= substr($row['isi'], 0, 200); ?></p>
+</article>
+<hr class="divider" />
+<?php endforeach; else: ?>
+<article class="entry">
+    <h2>Belum ada data.</h2>
+</article>
+<?php endif; ?>
+
+<?= $this->include('template/footer'); ?>
+```
+Lalu mencoba pada url yang telah diberikan yakni http://localhost:8080/artikel. hasil seperti gambar dibawah.
+##### ![Gambar 1](gambar27.png).
+Menambahkan data pada database.
+```
+INSERT INTO artikel (judul, isi, slug) VALUE
+('Artikel pertama', 'Lorem Ipsum adalah contoh teks atau dummy dalam industri percetakan dan penataan huruf atau typesetting. Lorem Ipsum telah menjadi standar contoh teks sejak tahun 1500an, saat seorang tukang cetak yang tidak dikenal mengambil sebuah kumpulan teks dan mengacaknya untuk menjadi sebuah buku contoh huruf.', 'artikel-pertama'),
+('Artikel kedua', 'Tidak seperti anggapan banyak orang, Lorem Ipsum bukanlah teks-teks yang diacak. Ia berakar dari sebuah naskah sastra latin klasik dari era 45 sebelum masehi, hingga bisa dipastikan usianya telah mencapai lebih dari 2000 tahun.', 'artikel-kedua');
+```
+Buka kembali halaman yang tadi lalu di refresh akan muncul data yang telan dimasukkan.
+Hasil sebagai berikut:
+##### ![Gambar 1](gambar28.png).
+
+#### Membuat tampilan detail artikel
+Menambahkan fungsi baru pada Contorller Artikel dengan nama view(). isi dengan kode seperti berikut.
+```php
+public function view($slug)
+    {
+        $model = new ArtikelModel();
+        $artikel = $model->where([
+            'slug' => $slug
+        ])->first();
+
+        // Menampilkan error apabila data tidak ada.
+        if (!$artikel)
+        {
+            throw PageNotFoundException::forPageNotFound();
+        }
+        $title = $artikel['judul'];
+        return view('artikel/detail', compact('artikel', 'title'));
+    }
+```
+
+#### Membuat view detail
+Membuat view baru pada app/views/artikel dengan nama detail.php. isi file dengan kode sebagai berikut.
+```php
+<?= $this->include('template/header'); ?>
+
+<article class="entry">
+    <h2><?= $artikel['judul']; ?></h2>
+    <img src="<?= base_url('/gambar/' . $artikel['gambar']);?>" alt="<?=
+$artikel['judul']; ?>">
+    <p><?= $artikel['isi']; ?></p>
+</article>
+
+<?= $this->include('template/footer'); ?>
+```
+
+#### Membuat routing untuk artikel data
+Tambahkan routing pada Routes.php.
+```php$routes->get('/artikel/(:any)', 'Artikel::view/$1');```.
+##### ![Gambar 1](gambar29.png).
+
+#### Membuat menu admin
+Membuat method baru pada Controller Artikel dengan nama admin_index(). isi dengan kode sebagai berikut:
+```php
+public function admin_index()
+    {
+        $title = 'Daftar Artikel';
+        $model = new ArtikelModel();
+        $artikel = $model->findALL();
+        return view('artikel/admin_index', compact('artikel', 'title'));
+    }
+```
+Membuat view admin dengan nama admin_index.php.
+```php
+<?= $this->include('template/admin_header'); ?>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Judul</th>
+            <th>Status</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php if($artikel): foreach($artikel as $row): ?>
+    <tr>
+        <td><?= $row['id']; ?></td>
+        <td>
+            <b><?= $row['judul']; ?></b>
+            <p><small><?= substr($row['isi'], 0, 50); ?></small></small></p>
+        </td>
+        <td><?= $row['status']; ?></td>
+        <td>
+            <a class="btn" href="<?= base_url('/admin/artikel/edit/' .
+$row['id']);?>">Ubah</a>
+            <a class="btn btn-danger" onclick="return confirm('Yakin
+menghapus data?');" href="<?= base_url('/admin/artikel/delete/' .
+$row['id']);?>">Hapus</a>
+        </td>
+    </tr>
+    <?php endforeach; else: ?>
+    <tr>
+        <td colspan="4">Belum ada data</td>
+    </tr>
+    <?php endif; ?>
+    </tbody>
+    <tfoot>
+        <tr>
+            <th>ID</th>
+            <th>Judul</th>
+            <th>Status</th>
+            <th>Aksi</th>
+        </tr>
+    </tfoot>
+</table>
+
+<?= $this->include('template/admin_footer'); ?>
+```.
+
+Menamba
