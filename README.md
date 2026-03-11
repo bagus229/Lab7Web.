@@ -499,7 +499,7 @@ Kode ini untuk membuat setiap page agar artikel dapat tersusun rapih.
 ##### ![Gambar 1](gambar34.png).
 
 3. Tombol kembali pada edit artikel
-##### ![Gambar 1](gambar34.png).
+##### ![Gambar 1](gambar35.png).
 
 4. Tombol kembali pada tambah artikel
 ##### ![Gambar 1](gambar36.png).
