@@ -481,3 +481,25 @@ public function delete($id)
 
 ## Pertanyaan dan Tugas
 Selesaikan programnya sesuai Langkah-langkah yang ada. Anda boleh melakukan improvisasi.
+1. Kolom pencarian
+```php
+<form method="get">
+    <input type="text" name="keyword" placeholder="Cari artikel">
+    <button type="submit">Cari</button>
+</form>
+```
+Kode ini untuk membuat kolom pencarian agar artikel yang telah dibuat dapat dicari dengan cepat.
+##### ![Gambar 1](gambar33.png).
+
+2. Pagination
+```php
+<?= $pager->links(); ?>
+```
+Kode ini untuk membuat setiap page agar artikel dapat tersusun rapih.
+##### ![Gambar 1](gambar34.png).
+
+3. Tombol kembali pada edit artikel
+##### ![Gambar 1](gambar34.png).
+
+4. Tombol kembali pada tambah artikel
+##### ![Gambar 1](gambar35.png).
