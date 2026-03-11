@@ -489,14 +489,14 @@ Selesaikan programnya sesuai Langkah-langkah yang ada. Anda boleh melakukan impr
 </form>
 ```
 Kode ini untuk membuat kolom pencarian agar artikel yang telah dibuat dapat dicari dengan cepat.
-##### ![Gambar 1](gambar33.png).
+##### ![Gambar 1](gambar34.png).
 
 2. Pagination
 ```php
 <?= $pager->links(); ?>
 ```
 Kode ini untuk membuat setiap page agar artikel dapat tersusun rapih.
-##### ![Gambar 1](gambar34.png).
+##### ![Gambar 1](gambar33.png).
 
 3. Tombol kembali pada edit artikel
 ##### ![Gambar 1](gambar35.png).
