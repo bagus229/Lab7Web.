@@ -503,3 +503,119 @@ Kode ini untuk membuat setiap page agar artikel dapat tersusun rapih.
 
 4. Tombol kembali pada tambah artikel
 ##### ![Gambar 1](gambar36.png).
+
+
+## Langkah-Langkah Praktikum 3
+
+#### Membuat layout utama
+Membuat folder layout dan file pada folder tersebut dengan nama main.php lalu isi kode seperti berikut.
+```php
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="<?= base_url('/style.css');?>">
+</head>
+<body>
+    <div id="container">
+        <header>
+            <h1>Layout Sederhana</h1>
+        </header>
+        <nav>
+            <a href="<?= base_url('/');?>" class="active">Home</a>
+            <a href="<?= base_url('/artikel');?>">Artikel</a>
+            <a href="<?= base_url('/about');?>">About</a>
+            <a href="<?= base_url('/contact');?>">Kontak</a>
+        </nav>
+        <section id="wrapper">
+            <section id="main">
+                <?= $this->renderSection('content') ?>
+            </section>
+            <aside di="sidebar">
+                <?= view_cell('App\\Cells\\ArtikelTerkini::render') ?>
+                <div class="widget-box">
+                    <h3 class="title">Widget Header</h3>
+                    <ul>
+                        <li><a href="#">Widget Link</a></li>
+                        <li><a href="#">Widget Link</a></li>
+                    </ul>
+                </div>
+                <div class="widget-box">
+                    <h3 class="title"></h3>
+                    <p>
+                        Vestibulum lorem elit, iaculis in nisl volutpat,
+                            malesuada tincidunt arcu. Proin in leo fringilla,
+vestibulum mi porta,
+                        faucibus felis. Integer pharetra est nunc, nec pretium
+nunc pretium ac.</p>
+                </div>
+            </aside>
+        </section>
+        <footer>
+            <p>&copy; 2021 - Universitas Pelita Bangsa</p>
+        </footer>
+    </div>
+</body>
+</html>
+```
+
+Hasil:
+##### ![Gambar 1](gambar37.png).
+
+#### Membuat file view
+Mengubah file home.php:
+```php
+<?= $this->extend('layout/main') ?>
+
+<?= $this->section('content') ?>
+
+<h1><?= $title; ?></h1>
+<hr>
+<p><?= $content; ?></p>
+
+<?= $this->endSection() ?>
+```
+
+#### Membuat class view cell
+Membuta folder Cells di dalam app/. lalu buat artikelTerkini.php di dalam folder yang telah dibuat. masukan kode seperti berikut:
+```php
+<?php
+
+namespace App\Cells;
+
+use CodeIgniter\View\Cell;
+use App\Models\ArtikelModel;
+
+class ArtikelTerkini extends Cell
+{
+    public function render()
+    {
+        $model = new ArtikelModel();
+        $artikel = $model->orderBy('tanggal', 'DESC')->limit(5)->findALL();
+
+        return view('components/artikel_terkini', ['artikel' => $artikel]);
+    }
+}
+```
+
+#### Membuat view untuk view cell
+Membuat folder component didalam app/Views lalu buat file artikel_terkini.php dengan kode sebagai berikut:
+```php
+<h3>Artikel Terkini</h3>
+<ul>
+    <?php foreach ($artikel as $row): ?>
+        <li><a href="<?= base_url('/artikel/' . $row['slug']) ?>"><?=
+$row['judul'] ?></a></li>
+    <?php endforeach; ?>
+</ul>
+```
+
+# Pertanyaan dan tugas
+• Sesuaikan data dengan praktikum sebelumnya, perlu melakukan perubahan field pada
+database dengan menambahkan tanggal agar dapat mengambil data artikel terbaru.
+• Selesaikan programnya sesuai Langkah-langkah yang ada. Anda boleh melakukan
+improvisasi.
+• Apa manfaat utama dari penggunaan View Layout dalam pengembangan aplikasi?
+• Jelaskan perbedaan antara View Cell dan View biasa.
+• Ubah View Cell agar hanya menampilkan post dengan kategori tertentu.
