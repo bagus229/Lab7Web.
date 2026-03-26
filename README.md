@@ -614,8 +614,50 @@ $row['judul'] ?></a></li>
 # Pertanyaan dan tugas
 • Sesuaikan data dengan praktikum sebelumnya, perlu melakukan perubahan field pada
 database dengan menambahkan tanggal agar dapat mengambil data artikel terbaru.
+```php
+$artikel = $model
+        ->orderBy('tanggal', 'DESC')
+        ->limit(5)
+        ->findAll();
+```
+Kode ini berfungsi untuk mengurutkan data berdasarkan tanggal terbaru dan membatasi jumlah data yang ditampilkan. Dan menambahkan kolom tanggal pada tabel database.
+##### ![Gambar 1](gambar37.png).
+Pada gambar diatas data artikel berurutan sesuai dengan tanggal dimana artikel tersebut sesuai dengan tanggal terbaru.
 • Selesaikan programnya sesuai Langkah-langkah yang ada. Anda boleh melakukan
-improvisasi.
+improvisasi. Hasil langkah-langkah ada di bagian atas.
 • Apa manfaat utama dari penggunaan View Layout dalam pengembangan aplikasi?
+```
+1. Meningkatkan pengalaman UI/UX.
+2. Struktur yang rapih.
+3. Tampilan menjadi lebih efisien.
+4. Membantu aplikasi lebih responsif.
+```
 • Jelaskan perbedaan antara View Cell dan View biasa.
+Perbedaan antara view cell dan View biasa adalah kalau View biasa itu ketika dipanggil harus melalui controller dan tidak fleksibel ketika dipakai dibanyak halaman. sedangkan View Cell ini tanpa memerlukan Controller yang banyak, fleksibel, dan bisa dipakai berulang.
 • Ubah View Cell agar hanya menampilkan post dengan kategori tertentu.
+```php
+<?= view_cell('ArtikelTerkini::render', ['kategori' => 'teknologi']) ?>
+<?= view_cell('ArtikelTerkini::render', ['kategori' => 'bisnis']) ?>
+```
+Kode diatas dipakai pada main php agar ketika di tampilan artikel bisa muncul perkategori.
+
+```php
+public function render(string $kategori = null)
+    {
+        $model = new ArtikelModel();
+        $query = $model->orderBy('tanggal', 'DESC');
+        if ($kategori) {
+            $query->where('kategori', $kategori);
+        }
+        $artikel = $query->limit(5)->findAll();
+
+        return view('components/artikel_terkini', [
+            'artikel'  => $artikel,
+            'kategori' => $kategori 
+        ]);
+    }
+```
+Dari kode diatas berfungsi untuk mengambil data artikel terbaru dari database dengan urutan berdasarkan tanggal secara menurun, serta dapat memfilter artikel berdasarkan kategori tertentu. Data yang diambil akan ditampilkan pada View Cell.
+
+Hasil:
+##### ![Gambar 1](gambar38.png).
