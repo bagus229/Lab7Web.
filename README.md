@@ -657,7 +657,7 @@ public function render(string $kategori = null)
         ]);
     }
 ```
-Dari kode diatas berfungsi untuk mengambil data artikel terbaru dari database dengan urutan berdasarkan tanggal secara menurun, serta dapat memfilter artikel berdasarkan kategori tertentu. Data yang diambil akan ditampilkan pada View Cell.
+Dari kode diatas berfungsi untuk memfilter artikel berdasarkan kategori tertentu. Data yang diambil akan ditampilkan pada View Cell.
 
 Hasil:
 ##### ![Gambar 1](gambar38.png).
