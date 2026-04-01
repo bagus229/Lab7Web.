@@ -634,7 +634,7 @@ improvisasi. Hasil langkah-langkah ada di bagian atas.
 ```
 • Jelaskan perbedaan antara View Cell dan View biasa.
 Perbedaan antara view cell dan View biasa adalah kalau View biasa itu ketika dipanggil harus melalui controller dan tidak fleksibel ketika dipakai dibanyak halaman. sedangkan View Cell ini tanpa memerlukan Controller yang banyak, fleksibel, dan bisa dipakai berulang.
-<hr>
+<br>
 • Ubah View Cell agar hanya menampilkan post dengan kategori tertentu.
 ```php
 <?php
