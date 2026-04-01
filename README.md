@@ -636,28 +636,59 @@ improvisasi. Hasil langkah-langkah ada di bagian atas.
 Perbedaan antara view cell dan View biasa adalah kalau View biasa itu ketika dipanggil harus melalui controller dan tidak fleksibel ketika dipakai dibanyak halaman. sedangkan View Cell ini tanpa memerlukan Controller yang banyak, fleksibel, dan bisa dipakai berulang.
 • Ubah View Cell agar hanya menampilkan post dengan kategori tertentu.
 ```php
-<?= view_cell('ArtikelTerkini::render', ['kategori' => 'teknologi']) ?>
-<?= view_cell('ArtikelTerkini::render', ['kategori' => 'bisnis']) ?>
-```
-Kode diatas dipakai pada main php agar ketika di tampilan artikel bisa muncul perkategori.
+<?php
 
-```php
-public function render(string $kategori = null)
+namespace App\Cells;
+
+use App\Models\ArtikelModel;
+
+class ArtikelTerkini 
+{
+    public function index()
     {
         $model = new ArtikelModel();
-        $query = $model->orderBy('tanggal', 'DESC');
-        if ($kategori) {
-            $query->where('kategori', $kategori);
+
+        $data = $model
+            ->where('kategori IS NOT NULL')
+            ->where('kategori !=', '')
+            ->orderBy('tanggal', 'DESC')
+            ->findAll();
+        $grouped = [];
+
+        foreach ($data as $row) {
+            $kategori = $row['kategori'] ?? 'Lainnya';
+            $grouped[$kategori][] = $row;
         }
-        $artikel = $query->limit(5)->findAll();
 
         return view('components/artikel_terkini', [
-            'artikel'  => $artikel,
-            'kategori' => $kategori 
+            'grouped' => $grouped
         ]);
     }
+}
 ```
 Dari kode diatas berfungsi untuk memfilter artikel berdasarkan kategori tertentu. Data yang diambil akan ditampilkan pada View Cell.
+
+Mengubah tampilan view/artikel_terkini.php agar tampil perkategori.
+```php
+<div class="widget-box">
+    <h3 class="title">Artikel Terkini</h3>
+
+    <?php foreach ($grouped as $kategori => $items): ?>
+        
+        <h4><?= $kategori ?></h4>
+        <ul>
+            <?php foreach ($items as $row): ?>
+                <li>
+                    <a href="<?= base_url('/artikel/' . $row['slug']) ?>">
+                        <?= $row['judul'] ?>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+
+    <?php endforeach; ?>
+</div>
+```
 
 Hasil:
 ##### ![Gambar 1](gambar38.png).
