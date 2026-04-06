@@ -939,4 +939,12 @@ Saya menambahkan tombol logout pada halaman dashboard admin dan user.
 ##### ![Gambar 1](gambar42.png).
 
 Lalu saya membuat kolom kategori pada tambah artikel.
+Input:
+```php
+<p>
+    <input type="text" name="kategori" placeholder="Kategori">
+</p>
+```
+
+Output:
 ##### ![Gambar 1](gambar43.png).
