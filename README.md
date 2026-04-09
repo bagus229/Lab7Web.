@@ -948,3 +948,74 @@ Input:
 
 Output:
 ##### ![Gambar 1](gambar43.png).
+
+## Langkah-Langkah Praktikum 4
+
+#### Membuat pagination
+Pagination adalah proses yang digunakan untuk membatasi tampilan yang pajang dari data yang terlalu banyak pada website. Memiliki fungsi untuk memexah tampilan menjadi beberapa halaman tergantung banyaknya data yang ingin ditampilkan pada setiap halaman.
+
+Membuat pagination pada Controller Artikel lalu di modifikasi kode pada method admin_index seperti di modul praktikum 5.
+```php
+public function admin_index()
+    {
+        $title = 'Daftar Artikel';
+        $model = new ArtikelModel();
+        $artikel = $model->paginate(10);
+        $pager   = $model->pager;   
+        $data = [
+            'artikel' => $artikel,
+            'pager'   => $pager,
+            'title'   => $title,
+        ]);
+        return view('artikel/admin_index') 
+    }
+```
+
+Kemudian pada file views/artikel/admin_index.php tambahkan kode dibawah kode deklarasi tabel data.
+```php
+<?= $pager->links(); ?>
+```
+
+Buka kembali menu daftar artikel di web, hasil akan seperti bawah:
+##### ![Gambar 1](gambar44.png).
+
+#### Membuat pencarian 
+Pencarian data digunakan untuk memfilter data yang dicari.
+Buka lagi Controller Artikel, pada method admin_index ubah kode seperti berikut.
+```php
+public function admin_index()
+    {
+        $title = 'Daftar Artikel';
+        $q = $this->request->getVar('q') ?? '';
+        $model = new ArtikelModel();
+
+        if ($q) {
+            $model->like('judul', $q);
+        }
+
+        $artikel = $model->paginate(2);
+        $pager   = $model->pager;   
+        $data = [
+            'artikel' => $artikel,
+            'pager'   => $pager,
+            'title'   => $title,
+            'q' => $q,
+        ]);
+        return view('artikel/admin_index') 
+    }
+```
+
+Lalu buka file views/artikel/admin_index.php dan tambahkan form pencarian sebelum deklarasi tabel seperti berikut:
+```php
+<form method="get" class="form-search">
+   <input type="text" name="q" value="<?= $q; ?>" placeholder="Cari data">
+   <input type="submit" value="Cari" class="btn btn-primary">
+</form>
+```
+
+Dan pada link pager ubah seperti berikut:
+```php <?= $pager->only(['q'])->links(); ?>```
+
+Kemudian ujicoba kembali halaman web admin artikel. lalu masukkan kata kunci tertentu pada form pencarian.
+
+##### ![Gambar 1](gambar45.png).
