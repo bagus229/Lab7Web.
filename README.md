@@ -1383,13 +1383,64 @@ $k->nama_kategori; ?></option>
 #### 8. Testing
 -Menampilkan daftar artikel dengan nama kategori.
 hasil:
-##### ![Gambar 1](gambar47.png).
+#### ![Gambar 1](gambar47.png).
 -Menambah artikel baru dengan memilih kategorinya.
 hasil:
-##### ![Gambar 1](gambar48.png).
+#### ![Gambar 1](gambar48.png).
+#### ![Gambar 1](gambar49.png).
 -Mengedit artikel dan mengubah kategorinya.
 hasilnya:
-##### ![Gambar 1](gambar49.png).
+#### ![Gambar 1](gambar50.png).
+#### ![Gambar 1](gambar51.png).
 -Menghapus artikel.
 hasil:
-##### ![Gambar 1](gambar50.png).
+Sebelum:
+#### ![Gambar 1](gambar49.png).
+Sesudah:
+#### ![Gambar 1](gambar52.png).
+
+Pertanyaan dan Tugas
+1. Selesaikan semua langkah praktikum di atas.
+2. Modifikasi tampilan detail artikel (artikel/detail.php) untuk menampilkan nama kategori
+artikel.
+```php
+<?= $this->include('template/header'); ?>
+
+<article class="entry">
+    <h2><?= $artikel['judul']; ?></h2>
+
+    <p><b>Kategori:</b> <?= $artikel['nama_kategori']; ?></p>
+
+    <img src="<?= base_url('/gambar/' . $artikel['gambar']); ?>" 
+         alt="<?= $artikel['judul']; ?>">
+
+    <p><?= $artikel['isi']; ?></p>
+</article>
+
+<?= $this->include('template/footer'); ?>
+```
+#### ![Gambar 1](gambar53.png).
+4. Tambahkan fitur untuk menampilkan daftar kategori di halaman depan (opsional).
+```php
+<?= $this->include('template/header'); ?>
+
+<?php if ($artikel): foreach ($artikel as $row): ?>
+    <article class="entry">
+            <h2><a href="<?= base_url('/artikel/' . $row['slug']); ?>"><?=
+$row['judul']; ?></a></h2>
+        <p>Kategori: <?= $row['nama_kategori'] ?></p>
+         <img src="<?= base_url('/gambar/' . $row['gambar']); ?>" alt="<?=
+$row['judul']; ?>">
+        <p><?= substr($row['isi'], 0, 200); ?></p>
+    </article>
+    <hr class="divider" />
+<?php endforeach; else: ?>
+    <article class="entry">
+        <h2>Belum ada data.</h2>
+    </article>
+<?php endif; ?>
+
+<?= $this->include('template/footer'); ?>
+```
+#### ![Gambar 1](gambar54.png).
+5. Buat fungsi untuk menampilkan artikel berdasarkan kategori tertentu (opsional).
