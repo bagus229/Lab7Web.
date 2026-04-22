@@ -1178,7 +1178,7 @@ class Artikel extends BaseController
             return redirect()->to('/admin/artikel');
         } else {
             $kategoriModel = new KategoriModel();
-            $data['kategori'] = $kategoriModel->findAll(); // ✅ SESUAI MODUL
+            $data['kategori'] = $kategoriModel->findAll(); 
             $data['title'] = "Tambah Artikel";
             return view('artikel/form_add', $data);
         }
