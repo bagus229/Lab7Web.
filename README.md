@@ -1444,3 +1444,61 @@ $row['judul']; ?>">
 ```
 #### ![Gambar 1](gambar54.png).
 5. Buat fungsi untuk menampilkan artikel berdasarkan kategori tertentu (opsional).
+
+## Langkah-Langkah Praktikum 7
+#### Upload gambar pada artikel
+Menambahkan fungsi unggah pada cotroller di method add:
+```php
+public function add()
+    {
+        // Validation...
+        $validation = \Config\Services::validation();
+        $validation->setRules(['judul' => 'required']);
+        $isDataValid = $validation->withRequest($this->request)->run();
+        if ($this->request->getMethod() == 'post' && $this->validate([
+            'judul' => 'required',
+               'id_kategori' => 'required|integer' // Ensure id_kategori is required and an integer
+        ])) {
+            $file = $this->request->getFile('gambar');
+            $file->move(ROOTPATH . 'public/gambar');
+            $model = new ArtikelModel();
+            $model->insert([
+                'judul' => $this->request->getPost('judul'),
+                'isi' => $this->request->getPost('isi'),
+                'slug' => url_title($this->request->getPost('judul')),
+                'id_kategori' => $this->request->getPost('id_kategori'),
+                'gambar' => $file->getName(),
+            ]);
+            return redirect()->to('/admin/artikel');
+        } else {
+            $kategoriModel = new KategoriModel();
+            $data['kategori'] = $kategoriModel->findAll(); 
+            $data['title'] = "Tambah Artikel";
+            return view('artikel/form_add', $data);
+        }
+    }
+```
+Method yang sudah digunakan guna menambahkan gambar artikel berita.
+
+Menambahkan kode tombol input gambar pada  views/artikel/form_add.php:
+```php
+<p>
+ <input type="file" name="gambar">
+</p>
+```
+Lalu menyesuaikan tag form dengan menambhakna ecrypt type:
+```php
+<form action="" method="post" enctype="multipart/form-data">
+```
+Kode tersebut ditambahkan agar fungsi input gambar dapat bekerja dengan baik.
+Kemudian uji coba upload gambar pada tambah artikel.
+#### ![Gambar 1](gambar55.png).
+#### ![Gambar 1](gambar56.png).
+```php
+<?php if (!empty($row->gambar)): ?>
+                            <img src="<?= base_url('/gambar/' . $row->gambar); ?>" width="80" style="display:block; margin-bottom:5px;">
+                        <?php endif; ?>
+```
+kode ini berguna untuk menampilkan pada halaman daftar artikel admin.
+#### ![Gambar 1](gambar57.png).
+#### ![Gambar 1](gambar58.png).
