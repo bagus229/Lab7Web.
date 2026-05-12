@@ -1505,3 +1505,154 @@ kode ini berguna untuk menampilkan pada halaman daftar artikel admin.
 
 
 ## Langkah-Langkah Praktikum 8: AJAX
+AJAX atau Asynchronous JavaScript and XML merupakan gabungan dari teknologi pengembangan aplikasi web yang membuat aplikasi web menjadi lebih responsif terhadap interaksi pengguna. 
+Keutungan menggunakan AJAX:
+```
+- Meningkatkan User Experience (UX).
+- Menghemat Bandwidth.
+- Mempertahankan State Aplikasi.
+```
+```
+Contoh:
+- Live chat applications
+- Autocomplete suggestions
+- Real-time updates
+- Validasi formulir secara real-time
+```
+
+Langakah-langkah Praktikum sebagai berikut:
+
+#### Menambahkan Pustaka jQuery
+mendownload pustaka tersebut terlebih dahulu dan diekstrak filenya. setelah di ekstrak taruh pada folder public/assets/js.
+#### ![Gambar 1](gambar59.png).
+
+#### Memebuat model
+Membuat AJAX Controller agar model dapat diakses melalui AJAX.
+```php
+<?= $this->include('template/admin_header'); ?>
+
+<h2><?= $title; ?></h2>
+<br>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form id="filterForm" class="form-inline">
+            <input type="text" name="q" id="q" placeholder="Cari judul artikel" class="form-control mr-2">
+            
+            <select name="kategori_id" id="kategori_id" class="form-control mr-2">
+                <option value="">Semua Kategori</option>
+                <?php foreach ($kategori as $k): ?>
+                    <option value="<?= $k['id_kategori']; ?>">
+                        <?= $k['nama_kategori']; ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
+            <button type="submit" class="btn btn-primary">Cari</button>
+        </form>
+    </div>
+</div>
+
+<table class="table" id="artikelTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Gambar</th>
+            <th>Judul</th>
+            <th>Kategori</th>
+            <th>Status</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="6">Loading data...</td>
+        </tr>
+    </tbody>
+</table>
+
+<script src="<?= base_url('assets/js/jquery-4.0.0.min.js') ?>"></script>
+
+<script>
+$(document).ready(function() {
+
+    function loadData(q = '', kategori_id = '') {
+        $('#artikelTable tbody').html('<tr><td colspan="6">Loading data...</td></tr>');
+
+        $.ajax({
+            url: "<?= base_url('ajax/getData') ?>",
+            method: "GET",
+            data: {
+                q: q,
+                kategori_id: kategori_id
+            },
+            dataType: "json",
+            success: function(data) {
+                var html = '';
+
+                if (data.length > 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        var row = data[i];
+
+                        html += '<tr>';
+                        html += '<td>' + row.id + '</td>';
+
+                        html += '<td>';
+                        if (row.gambar) {
+                            html += '<img src="<?= base_url('/gambar/') ?>' + row.gambar + '" width="80">';
+                        }
+                        html += '</td>';
+
+                        html += '<td><b>' + row.judul + '</b><br><small>' + row.isi.substring(0,50) + '</small></td>';
+                        html += '<td>' + row.nama_kategori + '</td>';
+                        html += '<td>' + row.status + '</td>';
+
+                        html += '<td>';
+                        html += '<a href="<?= base_url('/admin/artikel/edit/') ?>' + row.id + '" class="btn btn-sm btn-info">Ubah</a> ';
+                        html += '<a href="#" class="btn btn-sm btn-danger btn-delete" data-id="' + row.id + '">Hapus</a>';
+                        html += '</td>';
+
+                        html += '</tr>';
+                    }
+                } else {
+                    html = '<tr><td colspan="6">Tidak ada data</td></tr>';
+                }
+
+                $('#artikelTable tbody').html(html);
+            }
+        });
+    }
+
+    // Load awal
+    loadData();
+
+    // Filter
+    $('#filterForm').submit(function(e) {
+        e.preventDefault();
+        var q = $('#q').val();
+        var kategori_id = $('#kategori_id').val();
+        loadData(q, kategori_id);
+    });
+
+    // Delete
+    $(document).on('click', '.btn-delete', function(e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+
+        if (confirm('Yakin hapus data?')) {
+            $.ajax({
+                url: "<?= base_url('admin/artikel/delete/') ?>" + id,
+                method: "GET",
+                success: function() {
+                    loadData();
+                }
+            });
+        }
+    });
+
+});
+</script>
+
+<?= $this->include('template/admin_footer'); ?>
+```
+- g
