@@ -1529,6 +1529,118 @@ mendownload pustaka tersebut terlebih dahulu dan diekstrak filenya. setelah di e
 #### Memebuat model
 Membuat AJAX Controller agar model dapat diakses melalui AJAX.
 ```php
+<?php
+
+namespace App\Controllers;
+
+use CodeIgniter\Controller;
+use CodeIgniter\HTTP\Request;
+use CodeIgniter\HTTP\Response;
+use App\Models\ArtikelModel;
+
+class  AjaxController extends Controller
+{
+    public function index()
+    {
+        return view('ajax/index');
+    }
+
+    public function getData()
+    {
+        $q = $this->request->getVar('q') ?? '';
+        $kategori_id = $this->request->getVar('kategori_id') ?? '';
+    
+        $model = new ArtikelModel();
+        
+        $builder = $model->db->table('artikel')
+            ->select('artikel.*, kategori.nama_kategori')
+            ->join('kategori', 'kategori.id_kategori = artikel.id_kategori', 'left');
+    
+        if ($q != '') {
+            $builder->like('artikel.judul', $q);
+        }
+    
+        if ($kategori_id != '') {
+            $builder->where('artikel.id_kategori', $kategori_id);
+        }
+    
+        $data = $builder->get()->getResultArray();
+    
+        return $this->response->setJSON($data);
+    }
+
+    public function delete($id)
+    {
+        $model = new ArtikelModel();
+        $data = $model->delete($id);
+
+        $data = [
+            'status' => 'OK'
+        ];
+
+        return $this->response->setJSON($data);
+    }
+
+    public function store()
+    {
+        $model = new ArtikelModel();
+
+        $file = $this->request->getFile('gambar');
+        $namaGambar = '';
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $file->move(ROOTPATH . 'public/gambar');
+            $namaGambar = $file->getName();
+        }
+
+        $model->insert([
+            'judul'       => $this->request->getPost('judul'),
+            'isi'         => $this->request->getPost('isi'),
+            'slug'        => url_title($this->request->getPost('judul')),
+            'id_kategori' => $this->request->getPost('id_kategori'),
+            'gambar'      => $namaGambar,
+        ]);
+
+        return $this->response->setJSON(['status' => 'OK']);
+    }
+
+    public function getById($id)
+    {
+        $model = new ArtikelModel();
+        $data = $model->find($id);
+        return $this->response->setJSON($data);
+    }
+
+    public function update($id)
+    {
+        $model = new ArtikelModel();
+
+        $file = $this->request->getFile('gambar');
+        $namaGambar = $this->request->getPost('gambar_lama');
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $file->move(ROOTPATH . 'public/gambar');
+            $namaGambar = $file->getName();
+        }
+
+        $model->update($id, [
+            'judul'       => $this->request->getPost('judul'),
+            'isi'         => $this->request->getPost('isi'),
+            'slug'        => url_title($this->request->getPost('judul')),
+            'id_kategori' => $this->request->getPost('id_kategori'),
+            'gambar'      => $namaGambar,
+        ]);
+
+        return $this->response->setJSON(['status' => 'OK']);
+    }
+}
+```
+Fungsi:
+- mengirim data JSON menggunakan AJAX,
+- Penghubung database,
+- Pengelola CRUD artikel,
+- Menampilkan data artikel.
+
+Membuat view
+```php
 <?= $this->include('template/admin_header'); ?>
 
 <h2><?= $title; ?></h2>
@@ -1655,4 +1767,144 @@ $(document).ready(function() {
 
 <?= $this->include('template/admin_footer'); ?>
 ```
-- g
+Fungsi:
+- Menampilkan data artikel secara AJAX,
+- Melakukan pencarian artikel,
+- Filter berdasarkan kategori,
+- Menghapus artikel tanpa reload halaman.
+
+#### ![Gambar 1](gambar60.png).
+
+#### Pertanyaan dan Tugas
+Selesaikan programnya sesuai Langkah-langkah yang ada. Tambahkan fungsi untuk
+tambah dan ubah data. Anda boleh melakukan improvisasi.
+Memnambahkan pada file form add dan form edit.
+form add:
+```php
+<?= $this->include('template/admin_header'); ?>
+
+<h2><?= $title; ?></h2>
+<form id="formTambah" action="" method="post" enctype="multipart/form-data">
+    <?= csrf_field(); ?>
+    <p>
+        <label for="judul">Judul</label>   
+    <input type="text" name="judul" id="judul" required>
+    </p>
+    <p>
+        <label for="isi">Isi</label>
+        <textarea name="isi" id="isi" cols="50" rows="10"></textarea>
+    </p>
+    <p>
+        <label for="id_kategori">Kategori</label>
+        <select name="id_kategori" id="id_kategori" required>
+            <?php foreach($kategori as $k): ?>
+                <option value="<?= $k['id_kategori']; ?>"><?= $k['nama_kategori']; ?></option>
+            <?php endforeach; ?>
+        </select>
+        <p>
+            <input type="file" name="gambar">
+        </p>
+    </p>
+    <p><input type="submit" value="Kirim" class="btn btn-large"></p><br>
+    <a href="<?= base_url('admin/artikel'); ?>" class="btn btn-large">Kembali</a></p>
+</form>
+
+<script src="<?= base_url('assets/js/jquery-4.0.0.min.js') ?>"></script>
+<script>
+$('#formTambah').submit(function(e) {
+    e.preventDefault();
+    var formData = new FormData(this);
+    $.ajax({
+        url: "<?= base_url('ajax/store') ?>",
+        method: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(res) {
+            if (res.status == 'OK') {
+                alert('Artikel berhasil ditambahkan!');
+                window.location.href = "<?= base_url('admin/artikel') ?>";
+            }
+        },
+        error: function() {
+            alert('Gagal menyimpan data!');
+        }
+    });
+});
+</script>
+
+<?= $this->include('template/admin_footer'); ?>
+```
+Fungsi:
+- Menyimpan data realtime,
+- Redirect otomatis setelah berhasil.
+- Menyimpan artikel ke database tanpa reload halaman.
+Hasil:
+#### ![Gambar 1](gambar61.png).
+
+form edit:
+```php
+<?= $this->include('template/admin_header'); ?>
+
+<h2><?= $title; ?></h2>
+<form id="formUbah" action="" method="post" enctype="multipart/form-data">
+    <p>
+        <label for="judul">Judul</label>
+         <input type="text" name="judul" value="<?= $artikel['judul']; ?>"
+id="judul" required>
+    </p>
+    <p>
+        <label for="isi">Isi</label>
+        <textarea name="isi" id="isi" cols="50" rows="10"><?= $artikel['isi'];
+    ?></textarea>
+    </p>
+    <p>
+        <label for="id_kategori">Kategori</label>
+        <select name="id_kategori" id="id_kategori" required>
+            <?php foreach($kategori as $k): ?>
+                         <option value="<?= $k->id_kategori; ?>" <?=
+($artikel['id_kategori'] == $k->id_kategori) ? 'selected' : ''; ?>><?=
+$k->nama_kategori; ?></option>
+            <?php endforeach; ?>
+        </select>
+    </p>
+    <p>
+        <?php if($artikel['gambar']): ?>
+            <img src="<?= base_url('/gambar/' . $artikel['gambar']) ?>" width="150"><br><br>
+        <?php endif; ?>
+        <label for="gambar">Ubah Gambar</label>
+        <input type="file" name="gambar" id="gambar">
+        <input type="hidden" name="gambar_lama" value="<?= $artikel['gambar']; ?>">
+    </p>
+    <p><input type="submit" value="Kirim" class="btn btn-large"></p><br>
+    <a href="<?= base_url('admin/artikel'); ?>" class="btn btn-large">Kembali</a></p>
+</form>
+
+<script src="<?= base_url('assets/js/jquery-4.0.0.min.js') ?>"></script>
+<script>
+$('#formUbah').submit(function(e) {
+    e.preventDefault();
+    var formData = new FormData(this);
+    $.ajax({
+        url: "<?= base_url('ajax/update/' . $artikel['id']) ?>",
+        method: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(res) {
+            if (res.status == 'OK') {
+                alert('Artikel berhasil diubah!');
+                window.location.href = "<?= base_url('admin/artikel') ?>";
+            }
+        },
+        error: function() {
+            alert('Gagal mengubah data!');
+        }
+    });
+});
+</script>
+
+<?= $this->include('template/admin_footer'); ?>
+```
+Hasil:
+#### ![Gambar 1](gambar62.png).
