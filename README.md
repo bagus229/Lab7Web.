@@ -1502,3 +1502,6 @@ Kemudian uji coba upload gambar pada tambah artikel.
 kode ini berguna untuk menampilkan pada halaman daftar artikel admin.
 #### ![Gambar 1](gambar57.png).
 #### ![Gambar 1](gambar58.png).
+
+
+## Langkah-Langkah Praktikum 8: AJAX
