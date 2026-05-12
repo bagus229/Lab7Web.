@@ -1906,5 +1906,8 @@ $('#formUbah').submit(function(e) {
 
 <?= $this->include('template/admin_footer'); ?>
 ```
+Fungsi:
+- Redirect ke halaman admin artikel setelah berhasil update,
+- Submit form ubah artikel menggunakan AJAX
 Hasil:
 #### ![Gambar 1](gambar62.png).
