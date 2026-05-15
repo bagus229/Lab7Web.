@@ -2158,6 +2158,7 @@ Hasil/Output:
 table-bordered table-striped
 ```
 menambahkan class tersebut agar tabel artikel lebih mudah untuk dibaca.
+
 3. Tambahkan indikator loading saat data sedang diambil dari server.
 ```php
 $('#loading-indicator').show();  // saat AJAX mulai
