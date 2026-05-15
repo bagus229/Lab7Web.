@@ -1911,3 +1911,284 @@ Fungsi:
 - Submit form ubah artikel menggunakan AJAX
 Hasil:
 #### ![Gambar 1](gambar62.png).
+
+
+
+## Langkah-Langkah Praktikum 9: Implementasi AJAX Pagination dan Search
+#### 1. Persiapan
+Siapkan MySQL server berjalan, pastikan tabel artikel dan kategori suda terisi, dan pastikan library jQuery sudah terpasang.
+
+#### 2. Modifikasi Controller Artikel
+Mengubah method pada admin index di file Artikel.php. Agar data dalam format JSON jika request AJAX.
+```php
+public function admin_index()
+    {
+        $title = 'Daftar Artikel (Admin)';
+        $model = new ArtikelModel();
+
+        $q = $this->request->getVar('q') ?? '';
+        $kategori_id = $this->request->getVar('kategori_id') ?? '';
+        $page = $this->request->getVar('page') ?? 1;
+
+        $builder = $model->select('artikel.*, kategori.nama_kategori')
+                         ->join('kategori', 'kategori.id_kategori = artikel.id_kategori');
+
+        if ($q != '') {
+            $builder->like('artikel.judul', $q);
+        }
+        if ($kategori_id != '') {
+            $builder->where('artikel.id_kategori', $kategori_id);
+        }
+
+        $sort = $this->request->getVar('sort') ?? '';
+        if ($sort == 'judul_asc') $builder->orderBy('artikel.judul', 'ASC');
+        if ($sort == 'judul_desc') $builder->orderBy('artikel.judul', 'DESC');
+        if ($sort == 'id_asc') $builder->orderBy('artikel.id', 'ASC');
+        if ($sort == 'id_desc') $builder->orderBy('artikel.id', 'DESC');
+
+        $artikel = $builder->paginate(5, 'default', $page);
+        $pager = $model->pager;
+
+        $data = [
+            'title'       => $title,
+            'q'           => $q,
+            'kategori_id' => $kategori_id,
+            'artikel'     => $artikel,
+            'pager'       => $pager,
+        ];
+
+        if ($this->request->isAJAX()) {
+            $data['pager'] = $pager->getDetails();
+            return $this->response->setJSON($data);
+        } else {
+            $kategoriModel = new KategoriModel();
+            $data['kategori'] = $kategoriModel->findAll();
+            return view('artikel/admin_index', $data);
+        }
+    }
+```
+Penjelasan fungsi:
+- nomor halaman untuk pagination, default halaman 1,
+- Menerapkan pagination dengan nomor halaman yang diberikan,
+- Kata kunci pencarian judul artikel, default kosong,
+- Return JSON berisi artikel dan detail pager (getDetails()) untuk pagination.
+
+#### 3. Modifikasi View
+```php
+<?= $this->include('template/admin_header'); ?>
+<h2><?= $title; ?></h2>
+<br>
+
+<div id="loading-indicator" style="display:none; text-align:center; padding: 20px;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading data...</span>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-8">
+        <form id="filterForm" class="form-inline">
+            <input type="text" name="q" id="q" placeholder="Cari judul artikel" class="form-control mr-2">
+
+            <select name="kategori_id" id="kategori_id" class="form-control mr-2">
+                <option value="">Semua Kategori</option>
+                <?php foreach ($kategori as $k): ?>
+                    <option value="<?= $k['id_kategori']; ?>">
+                        <?= $k['nama_kategori']; ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
+            <select name="sort" id="sort" class="form-control mr-2">
+                <option value="">Urutkan</option>
+                <option value="id_asc">ID Terkecil</option>
+                <option value="id_desc">ID Terbesar</option>
+                <option value="judul_asc">Judul A-Z</option>
+                <option value="judul_desc">Judul Z-A</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary">Cari</button>
+        </form>
+    </div>
+</div>
+
+<div id="article-container"></div>
+<br>
+<div id="pagination-container" class="pagination"></div>
+
+
+<script src="<?= base_url('assets/js/jquery-4.0.0.min.js') ?>"></script>
+<script>
+$(document).ready(function () {
+    const articleContainer = $('#article-container');
+    const paginationContainer = $('#pagination-container');
+
+    const fetchData = (url) => {
+        $('#loading-indicator').show();
+        $('#article-container').html('');
+        $('#pagination-container').html('');
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function (data) {
+                renderArticles(data.artikel);
+                renderPagination(data.pager, data.q, data.kategori_id);
+            },
+            error: function () {
+                $('#article-container').html('<div class="alert alert-danger">Gagal memuat data.</div>');
+            },
+            complete: function () {
+                $('#loading-indicator').hide();
+            }
+        });
+    };
+
+    const renderArticles = (articles) => {
+        let html = '<table class="table table-bordered table-striped">';
+        html += '<thead><tr><th>ID</th><th>Gambar</th><th>Judul</th><th>Kategori</th><th>Status</th><th>Aksi</th></tr></thead><tbody>';
+
+        if (articles && articles.length > 0) {
+            articles.forEach(row => {
+                html += `<tr>
+                    <td>${row.id}</td>
+                    <td>
+                        ${row.gambar
+                            ? `<img src="<?= base_url('/gambar/') ?>${row.gambar}" width="80">`
+                            : '-'}
+                    </td>
+                    <td><b>${row.judul}</b><br><small>${row.isi.substring(0, 50)}</small></td>
+                    <td>${row.nama_kategori}</td>
+                    <td>${row.status}</td>
+                    <td>
+                        <a href="<?= base_url('/admin/artikel/edit/') ?>${row.id}" class="btn btn-sm btn-info">Ubah</a>
+                        <a href="#" class="btn btn-sm btn-danger btn-delete" data-id="${row.id}">Hapus</a>
+                    </td>
+                </tr>`;
+            });
+        } else {
+            html += '<tr><td colspan="6" class="text-center">Tidak ada data.</td></tr>';
+        }
+
+        html += '</tbody></table>';
+        $('#article-container').html(html);
+    };
+
+    const renderPagination = (pager, q, kategori_id) => {
+        if (!pager || pager.pageCount <= 1) return;
+                    
+        let sort = $('#sort').val();
+        let html = '<nav><ul class="pagination">';
+                    
+        for (let i = 1; i <= pager.pageCount; i++) {
+            let url = `<?= base_url('/admin/artikel') ?>?page=${i}&q=${q ?? ''}&kategori_id=${kategori_id ?? ''}&sort=${sort ?? ''}`;
+            html += `<li class="page-item ${i == pager.currentPage ? 'active' : ''}">
+                        <a class="page-link pagination-link" href="${url}">${i}</a>
+                     </li>`;
+        }
+                    
+        html += '</ul></nav>';
+        paginationContainer.html(html);
+    };
+
+    $('#filterForm').on('submit', function (e) {
+        e.preventDefault();
+        const q = $('#q').val();
+        const kategori_id = $('#kategori_id').val();
+        const sort = $('#sort').val();
+        fetchData(`<?= base_url('/admin/artikel') ?>?q=${q}&kategori_id=${kategori_id}&sort=${sort}`);
+    });
+
+    $('#kategori_id').on('change', function () {
+        $('#filterForm').trigger('submit');
+    });
+
+    $('#sort').on('change', function () {
+        $('#filterForm').trigger('submit');
+    });
+
+
+    $(document).on('click', '.pagination-link', function (e) {
+        e.preventDefault();
+        const url = $(this).attr('href');
+        if (url && url !== '#') {
+            fetchData(url);
+        }
+    });
+
+    $(document).on('click', '.btn-delete', function (e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        if (confirm('Yakin hapus data ini?')) {
+            $.ajax({
+                url: `<?= base_url('admin/artikel/delete/') ?>${id}`,
+                method: 'GET',
+                success: function () {
+                    $('#filterForm').trigger('submit');
+                },
+                error: function () {
+                    alert('Gagal menghapus data.');
+                }
+            });
+        }
+    });
+
+    fetchData('<?= base_url('/admin/artikel') ?>');
+});
+</script>
+
+<?= $this->include('template/admin_footer'); ?>
+```
+Penjelasan fungsi:
+- jQuery mengirim request ke server secara otomatis
+- Form tidak reload halaman
+- Tidak memakai tabel artikel dan pagination secara langsung.
+
+Hasil/Output:
+#### ![Gambar 1](gambar63.png).
+
+#### Pertanyaan dan Tugas
+1. Selesaikan semua langkah praktikum di atas.
+2. Modifikasi tampilan data artikel dan pagination sesuai kebutuhan desain.
+```php
+table-bordered table-striped
+```
+menambahkan class tersebut agar tabel artikel lebih mudah untuk dibaca.
+3. Tambahkan indikator loading saat data sedang diambil dari server.
+```php
+$('#loading-indicator').show();  // saat AJAX mulai
+// ...
+complete: function () {
+    $('#loading-indicator').hide();  // saat AJAX selesai
+}
+```
+ketika request ke server dimulai, indikator ditampilkan. Setelah server mengembalikan response berhasil atau gagal, idikator disembunyikan kembali melalui callback complete di AJAX. indikator ini memberi tahu pengguna bahwa data sedang diproses.
+Hasil:
+#### ![Gambar 1](gambar64.png).
+#### ![Gambar 1](gambar63.png).
+4. Implementasikan fitur sorting (mengurutkan artikel berdasarkan judul, dll.) dengan AJAX.
+```php
+<select name="sort" id="sort" class="form-control mr-2">
+                <option value="">Urutkan</option>
+                <option value="id_asc">ID Terkecil</option>
+                <option value="id_desc">ID Terbesar</option>
+                <option value="judul_asc">Judul A-Z</option>
+                <option value="judul_desc">Judul Z-A</option>
+</select>
+
+$sort = $this->request->getVar('sort') ?? '';
+        if ($sort == 'judul_asc') $builder->orderBy('artikel.judul', 'ASC');
+        if ($sort == 'judul_desc') $builder->orderBy('artikel.judul', 'DESC');
+        if ($sort == 'id_asc') $builder->orderBy('artikel.id', 'ASC');
+        if ($sort == 'id_desc') $builder->orderBy('artikel.id', 'DESC');
+```
+Dapat merubah dropdown sesuai keingingan berdasarkan urutan: pilihan ID Terkecil, ID Terbesar, Judul A-Z, dan Judul Z-A. form otomatis ter-submit dan mengirim parameter sort ke server tanpa reload halaman.
+Hasil.
+berdasarkan urutan abjad:
+#### ![Gambar 1](gambar65.png).
+berdasarkan urutan ID:
+#### ![Gambar 1](gambar66.png).
