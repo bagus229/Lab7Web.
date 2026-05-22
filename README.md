@@ -621,7 +621,7 @@ $artikel = $model
         ->findAll();
 ```
 Kode ini berfungsi untuk mengurutkan data berdasarkan tanggal terbaru dan membatasi jumlah data yang ditampilkan. Dan menambahkan kolom tanggal pada tabel database.
-##### ![Gambar 1](gambar37.png).
+##### ![Gambar 1](gambar75.png).
 Pada gambar diatas data artikel berurutan sesuai dengan tanggal dimana artikel tersebut sesuai dengan tanggal terbaru.
 • Selesaikan programnya sesuai Langkah-langkah yang ada. Anda boleh melakukan
 improvisasi. Hasil langkah-langkah ada di bagian atas.
