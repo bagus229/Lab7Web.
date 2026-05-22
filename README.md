@@ -2193,3 +2193,156 @@ berdasarkan urutan abjad:
 #### ![Gambar 1](gambar65.png).
 berdasarkan urutan ID:
 #### ![Gambar 1](gambar66.png).
+
+## Langkah-Langkah Praktikum 10: API
+Rest API (Representational State Transfer) merupakan antarmuka yang memungkinkan dua sistem atau aplikasi berbeda untuk saling berkomunikasi dan bertukar data melalui internet.
+
+#### Mendownload REST Client
+Mendownload aplikasi Postman. Aplikasi tersebut berfungsi sebagai REST Client dan digunakan untuk testing REST API.
+#### ![Gambar 1](gambar67.png).
+
+#### Membuat Model
+Membuat file REST Controller dengan nama Post.php di direktori app\Controllers.
+```php
+<?php
+
+namespace App\Controllers;
+
+use CodeIgniter\RESTful\ResourceController;
+use CodeIgniter\API\ResponseTrait;
+use App\Models\ArtikelModel;
+
+class Post extends ResourceController
+{
+    use ResponseTrait;
+    // all users
+    public function index()
+    {
+        $model = new ArtikelModel();
+        $data['artikel'] = $model->orderBy('id', 'DESC')->findAll();
+        return $this->respond($data);
+    }
+    // create
+    public function create()
+    {
+        $model = new ArtikelModel();
+        $data = [
+            'judul' => $this->request->getVar('judul'),
+            'isi' => $this->request->getVar('isi'),
+        ];
+        $model->insert($data);
+        $response = [
+            'status' => 201,
+            'error' => null,
+            'messages' => [
+                'success' => 'Data artikel berhasil ditambahkan.'
+            ]
+        ];
+        return $this->respondCreated($response);
+    }
+    // single user
+    public function show($id = null)
+    {
+        $model = new ArtikelModel();
+        $data = $model->where('id', $id)->first();
+        if ($data) {
+            return $this->respond($data);
+        } else {
+            return $this->failNotFound('Data tidak ditemukan.');
+        }
+    }
+    // update
+    public function update($id = null)
+    {
+        $model = new ArtikelModel();
+        $id = $this->request->getVar('id');
+        $data = [
+            'judul' => $this->request->getVar('judul'),
+            'isi' => $this->request->getVar('isi'),
+        ];
+        $model->update($id, $data);
+        $response = [
+            'status' => 200,
+            'error' => null,
+            'messages' => [
+                'success' => 'Data artikel berhasil diubah.'
+            ]
+        ];
+        return $this->respond($response);
+    }
+    // delete
+    public function delete($id = null)
+    {
+        $model = new ArtikelModel();
+        $data = $model->where('id', $id)->delete($id);
+        if ($data) {
+            $model->delete($id);
+            $response = [
+                'status' => 200,
+                'error' => null,
+                'messages' => [
+                    'success' => 'Data artikel berhasil dihapus.'
+                ]
+            ];
+            return $this->respondDeleted($response);
+        } else {
+            return $this->failNotFound('Data tidak ditemukan.');
+        }
+    }
+}
+```
+Fungsi:
+- Menampilkan data
+- Menambah data
+- Merubah data
+- Menghapus data
+
+#### Membuat Routing REST API
+Setelah membuat modelnya, lanjut untuk membuat routes-nya agar REST API dapat diakses. Pada file Routes.php. Tambahkan kode berikut:
+```php
+$routes->resource('post');
+```
+Lalu cek routenya dengan menjalankan perintah pada shell di xampp:
+```
+php spark routes
+```
+Akan muncul seperti berikut.
+#### ![Gambar 1](gambar68.png).
+
+#### Testing REST API CodeIgniter
+Buka aplikasi Postman yang tadi sudah didownload. pilih create new dan pilih lagi bagian HTTP Request.
+#### ![Gambar 1](gambar69.png).
+
+- Menampilkan Semua Data
+Pilih method GET dan masukka URL seperti berikut:
+```http://localhost:8080/post```
+Lalu, klik send dan akan terlihat hasilnya.
+#### ![Gambar 1](gambar70.png).
+
+- Menampilkan Data Spesifik
+Menggunakan method GET. mengubah ID artikel dengan URL berikut:
+```http://localhost:8080/post/3```
+Lalu, klik send. hasilnya akan muncul aritkel dengan ID no 3.
+#### ![Gambar 1](gambar71.png).
+
+- Mengubah Data
+Ubah method dari GET menjadi PUT. Kemudian, lalu masukkan URL dengan ID artikel yang mau diubah. Pilih tab Body. Kemudian, pilih x-www-form-uriencoded dan Masukkan nama atribut tabel pada kolom KEY dan nilai data yang baru pada kolom VALUE. Lalu send.
+```http://localhost:8080/post/2```
+Hasil.
+#### ![Gambar 1](gambar72.png).
+
+- Menambahkan Data
+Pilih method POST dan masukkan URL berikut:
+```http://localhost:8080/post```
+Pilih tab Body dan pilih x-www-form-uriencoded. masukkan atribute pada kolom KEY dan niai data baru pada VALUE. Lalu klik send.
+Hasil.
+#### ![Gambar 1](gambar73.png).
+
+- Menghapus Data
+Pilih method DELETE. Lalu, masukkan URL dengan data yang ingin dihapus. Masukkan URL seperti berikut:
+```http://localhost:8080/post/4```
+Hasil.
+#### ![Gambar 1](gambar74.png).
+
+#### Pertanyaan dan Tugas
+Selesaikan programnya sesuai Langkah-langkah yang ada. Anda boleh melakukan improvisasi.
