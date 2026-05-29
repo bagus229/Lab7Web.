@@ -3,7 +3,7 @@
 # Kelas: I241C
 # Matkul: Pemrograman Web 2
 
-## Langkah-Langkah Praktikum 1
+## Langkah-Langkah Praktikum 1: PHP Framework (Codeigniter)
 Mengaktifkan ekstensi yang diperlukan melalui XAMPP Control Panel. pilih bagian Apache lalu klik Config/PHP.ini.
 ##### ![Gambar 1](gambar1.png).
 
@@ -162,7 +162,7 @@ Hasil akan muncul seperti gambar dibawah ini.
 ##### ![Gambar 1](gambar23.png).
 ##### ![Gambar 1](gambar24.png).
 
-## Langkah-Langkah Praktikum 2
+## Langkah-Langkah Praktikum 2: Framework Lanjutan (CRUD)
 
 #### Membuat database: studi kasus data artikel.
 Membuat database dengan nama lab_ci4.
@@ -505,7 +505,7 @@ Kode ini untuk membuat setiap page agar artikel dapat tersusun rapih.
 ##### ![Gambar 1](gambar36.png).
 
 
-## Langkah-Langkah Praktikum 3
+## Langkah-Langkah Praktikum 3: View Layout dan View Cell
 
 #### Membuat layout utama
 Membuat folder layout dan file pada folder tersebut dengan nama main.php lalu isi kode seperti berikut.
@@ -695,8 +695,7 @@ Hasil:
 ##### ![Gambar 1](gambar38.png).
 
 
-## Langkah-Langkah Praktikum 4
-
+## Langkah-Langkah Praktikum 4: Framework Lanjutan (Modul Login)
 #### Membuat tabel user login
 Menyiapkan MySQL terlebih dahulu dan menjalankan servernya. lalu buat tabel user.
 ```
@@ -949,8 +948,7 @@ Input:
 Output:
 ##### ![Gambar 1](gambar43.png).
 
-## Langkah-Langkah Praktikum 5
-
+## Langkah-Langkah Praktikum 5: Pagination dan Pencarian
 #### Membuat pagination
 Pagination adalah proses yang digunakan untuk membatasi tampilan yang pajang dari data yang terlalu banyak pada website. Memiliki fungsi untuk memexah tampilan menjadi beberapa halaman tergantung banyaknya data yang ingin ditampilkan pada setiap halaman.
 
@@ -1021,8 +1019,7 @@ Kemudian ujicoba kembali halaman web admin artikel. lalu masukkan kata kunci ter
 ##### ![Gambar 1](gambar45.png).
 
 
-## Langkah-Langkah Praktikum 6
-
+## Langkah-Langkah Praktikum 6: Relasi Tabel dan Query Builder
 #### Relasi Tabel dan Query Buiider
 #### 1. Menyiapkan Mysql dan buka database lab_ci4
 
@@ -1445,7 +1442,7 @@ $row['judul']; ?>">
 #### ![Gambar 1](gambar54.png).
 5. Buat fungsi untuk menampilkan artikel berdasarkan kategori tertentu (opsional).
 
-## Langkah-Langkah Praktikum 7
+## Langkah-Langkah Praktikum 7: Upload File Gambar
 #### Upload gambar pada artikel
 Menambahkan fungsi unggah pada cotroller di method add:
 ```php
